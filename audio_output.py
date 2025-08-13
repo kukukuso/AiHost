@@ -86,10 +86,14 @@ class AudioOutputManager:
     
     def _init_primary_tts(self):
         """初始化主要TTS引擎"""
-        primary_model = self.model_config.get('primary_model', 'qwen2.5-omni')
+        primary_model = self.model_config.get('primary_model', 'qwen-api')
         
-        if primary_model == 'qwen2.5-omni':
-            # 尝试初始化Qwen2.5-Omni模型
+        # 当使用API模式时，不需要本地TTS，直接使用备用TTS
+        if primary_model == 'qwen-api':
+            logger.info("使用API模式，跳过本地TTS初始化")
+            return None
+        elif primary_model == 'qwen2.5-omni':
+            # 保留本地模型支持（如果需要）
             try:
                 tts_engine = Qwen25OmniTTS(self.model_config)
                 logger.info("Qwen2.5-Omni TTS引擎初始化成功")

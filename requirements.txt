@@ -1,10 +1,9 @@
 # AI抖音弹幕游戏主持人 - 依赖包清单
 
-# 核心AI模型相关
-torch>=2.0.0
-transformers>=4.36.0
-accelerate>=0.24.0
-modelscope>=1.9.0
+# 核心AI模型相关 - API调用方式
+openai>=1.0.0
+dashscope>=1.14.0  # 阿里云Qwen API
+httpx>=0.24.0
 
 # 音频处理相关
 soundfile>=0.12.1

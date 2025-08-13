@@ -46,23 +46,34 @@ audio_output:
 
 # AI模型设置
 model_config:
-  # 主要使用的AI模型 (建议保持默认)
-  primary_model: "qwen2.5-omni"
+  # 主要使用的AI模型 (API调用方式)
+  primary_model: "qwen-api"
+  
+  # Qwen API配置
+  qwen_api:
+    # API提供商: "dashscope", "openai-compatible"
+    provider: "dashscope"
+    
+    # 模型名称
+    model_name: "qwen-plus"  # 可选: qwen-turbo, qwen-plus, qwen-max
+    
+    # API基础URL (仅当provider为openai-compatible时需要)
+    base_url: ""
+    
+    # API密钥 (在.env文件中配置)
+    api_key: ""  # 从环境变量QWEN_API_KEY读取
   
   # 备选TTS模型 (当主模型不可用时)
   fallback_tts: "edge-tts"
-  
-  # 模型路径设置
-  model_path: "./models"
-  
-  # GPU设置
-  device: "auto"  # auto, cpu, cuda
-  gpu_memory_fraction: 0.8
   
   # 生成参数
   max_tokens: 150
   temperature: 0.8
   top_p: 0.9
+  
+  # API请求设置
+  timeout: 10  # 请求超时时间(秒)
+  max_retries: 3  # 最大重试次数
 
 # 互动逻辑设置
 interaction:

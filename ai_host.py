@@ -14,6 +14,14 @@ import threading
 import queue
 import asyncio
 
+# 导入Qwen API模块
+try:
+    from qwen_api import QwenAPIManager, EnhancedResponseGenerator
+    HAS_QWEN_API = True
+except ImportError:
+    logger.warning("Qwen API模块未找到，将使用基础回复生成器")
+    HAS_QWEN_API = False
+
 
 class AIGameHost:
     """AI游戏主持人"""
@@ -55,6 +63,10 @@ class AIGameHost:
         
         # 启动消息处理线程
         self.processing_thread = None
+        
+        # 初始化高级回复生成器（如果可用）
+        self.enhanced_generator = None
+        self._init_enhanced_generator()
         
         logger.info("AI主持人初始化完成")
     
@@ -102,6 +114,33 @@ class AIGameHost:
         }
         
         return personalities.get(character_type, personalities['活泼少女']).strip()
+    
+    def _init_enhanced_generator(self):
+        """初始化高级回复生成器"""
+        try:
+            # 检查是否启用API模式
+            model_config = self.config.get('model_config', {})
+            primary_model = model_config.get('primary_model', '')
+            
+            if primary_model == 'qwen-api' and HAS_QWEN_API:
+                # 初始化Qwen API管理器
+                api_manager = QwenAPIManager(model_config)
+                
+                # 测试API连接
+                if api_manager.test_connection():
+                    # 创建增强回复生成器
+                    self.enhanced_generator = EnhancedResponseGenerator(
+                        personality=self.personality,
+                        api_manager=api_manager
+                    )
+                    logger.success("✅ Qwen API回复生成器初始化成功")
+                else:
+                    logger.warning("⚠️ Qwen API连接测试失败，将使用基础回复生成器")
+            else:
+                logger.info("使用基础回复生成器（未启用API模式）")
+                
+        except Exception as e:
+            logger.warning(f"高级回复生成器初始化失败: {e}，将使用基础回复生成器")
     
     def start(self):
         """启动AI主持人"""
@@ -205,6 +244,16 @@ class AIGameHost:
             return None
         
         # 根据弹幕内容生成回复
+        if self.enhanced_generator:
+            # 使用Qwen API生成智能回复
+            try:
+                response = self.enhanced_generator.generate_response(event_data)
+                logger.debug("使用Qwen API生成回复")
+                return response
+            except Exception as e:
+                logger.warning(f"Qwen API生成回复失败: {e}，使用基础回复")
+        
+        # 使用基础回复生成器
         response = self._generate_comment_response(username, content)
         return response
     
@@ -306,6 +355,15 @@ class AIGameHost:
         # 更新统计
         self.interaction_stats['total_gifts'] += 1
         
+        # 优先使用Qwen API生成回复
+        if self.enhanced_generator:
+            try:
+                response = self.enhanced_generator.generate_response(event_data)
+                logger.debug("使用Qwen API生成礼物感谢回复")
+                return response
+            except Exception as e:
+                logger.warning(f"Qwen API生成礼物回复失败: {e}，使用基础回复")
+        
         # 根据礼物价值选择回复模板
         if is_expensive:
             # 高价值礼物
@@ -347,6 +405,15 @@ class AIGameHost:
         # 检查是否启用欢迎功能
         if not self.interaction_config.get('welcome_new_users', True):
             return None
+        
+        # 优先使用Qwen API生成回复
+        if self.enhanced_generator:
+            try:
+                response = self.enhanced_generator.generate_response(event_data)
+                logger.debug("使用Qwen API生成欢迎回复")
+                return response
+            except Exception as e:
+                logger.warning(f"Qwen API生成欢迎回复失败: {e}，使用基础回复")
         
         # 选择欢迎词
         welcome_messages = self.interaction_config.get('welcome_messages', [
