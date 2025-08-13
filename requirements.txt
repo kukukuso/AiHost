@@ -1,0 +1,41 @@
+# AI抖音弹幕游戏主持人 - 依赖包清单
+
+# 核心AI模型相关 - API调用方式
+openai>=1.0.0
+dashscope>=1.14.0  # 阿里云Qwen API
+httpx>=0.24.0
+
+# 音频处理相关
+soundfile>=0.12.1
+pydub>=0.25.1
+pyaudio>=0.2.11
+wave
+
+# 网络通信相关
+websocket-client>=1.6.0
+requests>=2.31.0
+aiohttp>=3.8.0
+
+# 数据处理相关
+pandas>=2.0.0
+numpy>=1.24.0
+json5
+
+# 异步处理
+asyncio
+aiofiles>=23.0.0
+
+# 配置文件处理
+pyyaml>=6.0
+configparser
+
+# 日志处理
+loguru>=0.7.0
+
+# 其他工具
+python-dotenv>=1.0.0
+tqdm>=4.65.0
+
+# 可选：本地TTS备选方案
+# edge-tts>=6.1.0
+# coqui-tts>=0.22.0

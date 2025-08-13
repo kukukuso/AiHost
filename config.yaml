@@ -1,0 +1,145 @@
+# AI抖音弹幕游戏主持人 - 主配置文件
+# 请根据您的实际情况修改以下配置
+
+# AI人格设定 (重要：在这里定义AI的性格特征)
+ai_personality:
+  # AI角色类型：可选 "活泼少女", "幽默段子手", "温柔大姐姐", "搞怪萌妹"
+  character_type: "活泼少女"
+  
+  # 自定义人格描述 (会覆盖预设的character_type)
+  custom_personality: |
+    你是一个充满活力的游戏主播助手，性格开朗活泼，说话风趣幽默。
+    你喜欢用"哇！"、"太棒了！"、"小伙伴们"这样的词汇。
+    对待粉丝非常热情，特别喜欢和观众互动，会根据弹幕内容给出有趣的回应。
+    当有人送礼物时，你会特别兴奋和感激。
+  
+  # 语音特征设置
+  voice_style: "甜美女声"  # 可选：甜美女声、活泼女声、温柔女声、中性声音
+
+# 抖音直播间设置 (必须修改)
+douyin_live:
+  # 直播间房间号 (必填！请替换为您的直播间房间号)
+  room_id: "YOUR_ROOM_ID_HERE"
+  
+  # 直播间URL (可选，如果有具体的直播间链接)
+  room_url: ""
+  
+  # 连接重试次数
+  max_retries: 3
+  
+  # 心跳检测间隔(秒)
+  heartbeat_interval: 30
+
+# 语音输出设置
+audio_output:
+  # 音频设备设置
+  device_index: null  # null=默认设备，或指定设备索引号
+  
+  # 音频质量设置
+  sample_rate: 22050
+  channels: 1
+  chunk_size: 1024
+  
+  # 语音生成延迟控制
+  max_audio_length: 10  # 最长音频时长(秒)
+  audio_cache_size: 50   # 音频缓存数量
+
+# AI模型设置
+model_config:
+  # 主要使用的AI模型 (API调用方式)
+  primary_model: "qwen-api"
+  
+  # Qwen API配置
+  qwen_api:
+    # API提供商: "dashscope", "openai-compatible"
+    provider: "dashscope"
+    
+    # 模型名称
+    model_name: "qwen-plus"  # 可选: qwen-turbo, qwen-plus, qwen-max
+    
+    # API基础URL (仅当provider为openai-compatible时需要)
+    base_url: ""
+    
+    # API密钥 (在.env文件中配置)
+    api_key: ""  # 从环境变量QWEN_API_KEY读取
+  
+  # 备选TTS模型 (当主模型不可用时)
+  fallback_tts: "edge-tts"
+  
+  # 生成参数
+  max_tokens: 150
+  temperature: 0.8
+  top_p: 0.9
+  
+  # API请求设置
+  timeout: 10  # 请求超时时间(秒)
+  max_retries: 3  # 最大重试次数
+
+# 互动逻辑设置
+interaction:
+  # 欢迎新用户
+  welcome_new_users: true
+  welcome_messages:
+    - "欢迎{username}来到直播间！"
+    - "哇！{username}来了！欢迎欢迎~"
+    - "新朋友{username}来啦！大家快欢迎一下！"
+  
+  # 礼物感谢设置
+  gift_thanks:
+    # 普通礼物感谢
+    normal_gifts:
+      - "谢谢{username}的{gift_name}！"
+      - "感谢{username}的支持！"
+    
+    # 高价值礼物感谢 (价值超过100元)
+    expensive_gifts:
+      - "哇！感谢{username}大哥的{gift_name}！太慷慨了！"
+      - "天哪！{username}大哥真的太豪气了！谢谢您的{gift_name}！"
+      - "{username}大哥威武！谢谢您的{gift_name}，我太感动了！"
+  
+  # 弹幕回复设置
+  comment_reply:
+    # 是否回复普通弹幕
+    reply_normal_comments: true
+    
+    # 回复频率 (1=全部回复, 0.5=50%概率回复)
+    reply_probability: 0.3
+    
+    # 特殊关键词触发回复
+    trigger_keywords:
+      - "主播"
+      - "好听"
+      - "厉害"
+      - "666"
+      - "加油"
+  
+  # 游戏相关回复
+  game_interaction:
+    # 游戏答题回复
+    answer_reactions:
+      correct: ["太棒了！答对了！", "厉害厉害！", "聪明！"]
+      wrong: ["哎呀，差一点点！", "没关系，下次一定行！", "再想想～"]
+    
+    # 游戏吐槽回复
+    complaint_reactions:
+      - "哈哈哈，这个游戏确实有点难！"
+      - "我懂我懂，这题目太坑了！"
+      - "别着急，慢慢来～"
+
+# 系统设置
+system:
+  # 日志设置
+  log_level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  log_file: "logs/ai_host.log"
+  
+  # 性能设置
+  max_concurrent_tasks: 5
+  response_timeout: 5  # 秒
+  
+  # 调试模式
+  debug_mode: false
+  save_audio_files: false  # 是否保存生成的音频文件
+  
+  # 安全设置
+  max_message_length: 200
+  banned_words: ["广告", "加群", "微信"]
